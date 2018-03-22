@@ -74,6 +74,7 @@ function drynoising()
   SNR_list = [-10; -5; 0; 5; 10; 15;];
   noise_list = [30; 47;];
   train_size = 8000;
+  SPLIT_SIZE = 100;
   parfor SNRnum = 1:length(SNR_list),
     SNR = SNR_list(SNRnum);
     disp(['proc: SNR = ' num2str(SNR) '...'])
