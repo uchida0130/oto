@@ -1,0 +1,47 @@
+%%% 実習で制作するmyfilt関数の実行速度に問題があるので、実験内での音声の畳込みにはこちらを用いる
+%%% [Input]
+%%% impdir                  : インパルス応答の格納ディレクトリ
+%%% inv_length              : 生成する逆フィルタの長さ
+%%% delay                   : 教師インパルスの遅延の大きさ
+%%% alpha                   : 正則化項パラメータ、デフォルトが0.002、推奨は0.05程度まで
+%%% LPFon                   : 教師インパルスにローパスフィルターをかけるか選択するオプション、0でオフ
+%%% [Output]
+%%% invdet                  : 生成した逆フィルタ
+%%% y                       : フィルタ＊逆フィルタの生成波形
+%%% error                   : フィルタ＊逆フィルタの生成波形と教師インパルス間の誤差
+
+function [invdet, y, error] = myinvdet(impdir, inv_length, delay, alpha)
+  switch nargin
+    case {1,2}
+  		disp('Syntax error');
+  		return;
+  	case 3
+        alpha=0.05;
+  end
+
+  fid = fopen([impdir 'g11s']);
+  g11 = fread(fid, 'double');
+  fid = fopen([impdir 'g12s']);
+  g12 = fread(fid, 'double');
+  fid = fopen([impdir 'g21s']);
+  g21 = fread(fid, 'double');
+  fid = fopen([impdir 'g22s']);
+  g22 = fread(fid, 'double');
+
+  % [g11, fs, nbit] = wavread([impdir 'in_left_out_left.wav']);
+  % [g12, fs, nbit] = wavread([impdir 'in_left_out_right.wav']);
+  % [g21, fs, nbit] = wavread([impdir 'in_right_out_left.wav']);
+  % [g22, fs, nbit] = wavread([impdir 'in_right_out_right.wav']);
+
+  impulse_length = length(g11);
+  % インパルスの行列式の計算
+  impdet = conv(g11, g22)-conv(g12, g21);
+  % 行列式に対する逆フィルタの計算
+  invdet = myinvfilt(impdet, inv_length, delay, alpha);
+  % フィルタ*逆フィルタ
+  y = conv(impdet, invdet);
+  % 誤差の計算
+  d = zeros(2*(impulse_length-1)+inv_length,1);
+  d(delay) = 1;
+  error = sum(abs(y-d));
+end
