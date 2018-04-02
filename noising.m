@@ -1,8 +1,8 @@
 function noising()
   % getteacher();
-  % train_noising();
-  % test_noising();
-  drynoising();
+  train_noising();
+  test_noising();
+  % drynoising();
 end
 
 function getteacher()
@@ -116,6 +116,9 @@ function train_noising()
       for iter = 1:SPLIT_SIZE,
         [ss,fs] = audioread(['../anechoic_work_2mic/teacher/ch1/No' sprintf('%05d',(SNRnum-1)*length(noise_list)*SPLIT_SIZE+(noisenum-1)*SPLIT_SIZE+iter) '.wav']);
         [noise,fs] = audioread(['../anechoic_work_2mic/ch1/noise_data/2mic_ch1_noise' sprintf('%02d',NOISE) '.wav']);
+        if fs~=Fs
+          noise=decimate(noise,ceil(fs/Fs),512,'fir');
+        end
 
         startpoint = randi(noiselen-length(ss))+16000*5;
         noise_ = noise(startpoint:startpoint+length(ss)-1);
@@ -153,6 +156,9 @@ function test_noising()
       for iter = 1:SPLIT_SIZE,
         [ss,fs] = audioread(['../anechoic_work_2mic/teacher/ch1/No' sprintf('%05d',train_size+(SNRnum-1)*length(noise_list)*SPLIT_SIZE+(noisenum-1)*SPLIT_SIZE+iter) '.wav']);
         [noise,fs] = audioread(['../anechoic_work_2mic/ch1/noise_data/2mic_ch1_noise' sprintf('%02d',NOISE) '.wav']);
+        if fs~=Fs
+          noise=decimate(noise,ceil(fs/Fs),512,'fir');
+        end
 
         startpoint = randi(noiselen-length(ss))+16000*5;
         noise_ = noise(startpoint:startpoint+length(ss)-1);

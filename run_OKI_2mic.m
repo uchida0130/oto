@@ -11,7 +11,7 @@ function train_AE()
   SPLIT_SIZE=250;
   SNR_list = [-5; 0; 5; 10;];
   noise_list = [9; 11; 13; 14; 18; 20; 26; 28;];
-  mask_type = 'soft';
+  mask_type = 'hard';
   for SNRnum = 1:length(SNR_list),
     SNR = SNR_list(SNRnum);
     disp(['proc: SNR = ' num2str(SNR) '...'])
@@ -78,7 +78,7 @@ function test_AE()
   SPLIT_SIZE=100;
   SNR_list = [-10; -5; 0; 5; 10; 15;];
   noise_list = [30; 47;];
-  mask_type = 'soft';
+  mask_type = 'hard';
   parfor SNRnum = 1:length(SNR_list),
     SNR = SNR_list(SNRnum);
     for noisenum = 1:length(noise_list),
